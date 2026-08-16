@@ -113,7 +113,7 @@ void idle_loop()
 #include "keyboard/Keypad/68/keypad_68.h"
 #include "service/Editor/Editor.h"
 
-#ifdef BOARD_ESP32_S3
+#if defined(BOARD_ESP32_S3) && !defined(USE_SERIAL_KEYBOARD) && !defined(USE_BLE_KEYBOARD_HOST)
 #define IDLE_CAN_SLEEP 1
 #include <esp_sleep.h>
 #endif
@@ -124,7 +124,7 @@ bool sleep_supported()
     return true;
 #elif defined(HOST_EMU)
     // The emulator has no chip to sleep, but the Preferences rows still need to
-    // be previewable - this is the only place that UI can be seen off-device.
+    // be previewable - this is the only place the rev_8-only UI can be seen.
     return true;
 #else
     return false;

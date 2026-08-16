@@ -69,6 +69,9 @@ static const HelpLine MENU_RIGHT[] = {
     {"W", "Wi-Fi", false},
     {"S", "Sync", false},
     {"D", "USB Drive", false},
+#ifdef USE_BLE_KEYBOARD_HOST
+    {"K", "Keyboard", false},
+#endif
     {"U", "Update", false},
     {"H", "Help", false},
     {"A", "About", false},
@@ -143,9 +146,9 @@ void Help_render(ST7305_4p2_BW_DisplayDriver *display, U8G2_FOR_ST73XX *u8)
 
     u8->setFont(u8g2_font_profont22_tf);
     // Pitch is set by the JUMP column, the taller of the two - 9 rows have to fit
-    // between the header and the footer. At profont22 the glyphs are 22 tall, so
-    // the old 18 pitch overlapped them; 24 gives a row of air and still lands the
-    // last row clear of the footer rule.
+    // between the header and the footer, 10 on a BLE build. At profont22 the
+    // glyphs are 22 tall, so the old 18 pitch overlapped them; 24 gives a row of
+    // air and still lands the tenth row's baseline at 268, clear of the rule.
     const int y0 = 52, pitch = 24;
     drawColumn(display, u8, MENU_LEFT, N(MENU_LEFT), 8, 190, 12, y0, pitch);
     drawColumn(display, u8, MENU_RIGHT, N(MENU_RIGHT), 204, 392, 208, y0, pitch);
@@ -184,6 +187,9 @@ void Help_keyboard(int key)
     if (key == 'L' || key == 'l') { app["menu"]["state"] = MENU_LAYOUT; return; }
     if (key == 'W' || key == 'w') { app["menu"]["state"] = MENU_WIFI; return; }
     if (key == 'D' || key == 'd') { app["menu"]["state"] = MENU_STORAGE; return; }
+#ifdef USE_BLE_KEYBOARD_HOST
+    if (key == 'K' || key == 'k') { app["menu"]["state"] = MENU_BLUETOOTH; return; }
+#endif
     if ((key == 'S' || key == 's') && !app["config"]["sync"]["url"].as<String>().isEmpty())
     { app["menu"]["state"] = MENU_SYNC; return; }
     if (key == 'U' || key == 'u')

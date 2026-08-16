@@ -23,6 +23,9 @@ U8G2_FOR_ST73XX u8g2;
 #include "service/Idle/Idle.h"
 #include "service/Editor/Editor.h"
 #include "service/Tools/TextUtil.h"
+#ifdef BATTERY
+#include "service/Battery/Battery.h"
+#endif
 #include <string.h>
 
 // Fonts used for labels (file titles, status bar). Latin glyphs come from the
@@ -291,6 +294,16 @@ static void rlcd_draw_rest(bool asleep)
     u8g2.print(count.c_str());
 
     u8g2.setFont(u8g2_font_profont22_tf);
+#ifdef BATTERY
+    int pct = battery_percent();
+    if (pct >= 0)
+    {
+        String b = String(pct) + "% battery";
+        u8g2.setCursor(tx, my + 98);
+        u8g2.print(b.c_str());
+    }
+#endif
+
 
     // ---- the way back ----
     const char *hint = asleep ? "Press any key" : "Any key to carry on";
@@ -300,12 +313,16 @@ static void rlcd_draw_rest(bool asleep)
     display.display();
 }
 
-// Idle throttle hooks. The panel is deliberately left in High Power mode: this
-// panel's LPM refresh keeps redrawing the held frame with the wrong drive
-// voltages and the text visibly rots while you are away - it looks like the
-// device crashed. Nothing repaints while idle, so the decay just sits there
+// Idle throttle hooks. Low Power mode is entered only on the type-2 panel. The
+// rev_8 glass (YDP420H001-V3, profile 1) keeps refreshing the held frame at the
+// wrong drive voltages in LPM and the text visibly rots while you are away - it
+// reads as a crash. Nothing repaints while idle, so the decay just sits there
 // until a keypress forces a full repaint. Staying in HPM costs only the panel
 // booster; the real saving in this state is the main loop's delay(30).
+#if RLCD_TYPE != 1
+#define RLCD_IDLE_LPM 1
+#endif
+
 static void rlcd_idle_enter()
 {
     if (screensaverOn())
@@ -314,10 +331,16 @@ static void rlcd_idle_enter()
         Editor::getInstance().saveFile();
         rlcd_draw_rest(false);
     }
+#ifdef RLCD_IDLE_LPM
+    display.Low_Power_Mode();
+#endif
 }
 
 static void rlcd_idle_exit()
 {
+#ifdef RLCD_IDLE_LPM
+    display.High_Power_Mode();
+#endif
     // Whatever screen is live has to repaint in full - the rest card overwrote it.
     Editor::getInstance().pageChanged = true;
     Menu_clear();
@@ -344,8 +367,8 @@ static void rlcd_idle_sleep(bool deep)
 //
 // Kept short deliberately. The dramatic ghost this was written for turned out to
 // be a wrong panel profile (see RLCD_TYPE in platformio.ini) rather than trapped
-// charge, and nothing parks this panel in LPM any more, so a long flush would be
-// boot time spent on a problem that no longer occurs. Two cycles is hygiene.
+// charge, and only the type-2 panel parks in LPM now, so a long flush would be
+// boot time spent on a problem that rarely occurs. Two cycles is hygiene.
 static const int FLUSH_CYCLES = 2;
 static const int FLUSH_HOLD_MS = 150;
 
@@ -386,7 +409,7 @@ void display_RLCD_setup()
 // a render costs ~38ms (median; p90 51) and every keystroke dirties the page, so
 // at the old 100ms a character could wait ~140ms before it appeared. The render
 // itself early-outs when nothing changed, so a tighter tick costs CPU only while
-// something is actually moving, and the matrix now has its own 5ms scan task at
+// something is actually moving, and the matrix has its own 5ms scan task at a
 // higher priority than this loop - it cannot be starved by the extra drawing.
 #define RLCD_TICK_MS 40
 

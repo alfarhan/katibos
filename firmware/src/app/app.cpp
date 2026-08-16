@@ -26,6 +26,9 @@
 #include "service/Ai/Ai.h"
 #endif
 
+#ifdef BATTERY
+#include "service/Battery/Battery.h"
+#endif
 
 #ifdef USE_BLESERVER
 #include "service/BLEServer/BLEServer.h"
@@ -119,6 +122,9 @@ void app_setup()
     ms_setup();
 #endif
 
+#ifdef BATTERY
+    battery_setup();
+#endif
 
 #if defined(REV5) || defined(CARDPUTER)
     // BLE Server Background Task
@@ -156,6 +162,9 @@ void app_loop()
     BLEServer_loop();
 #endif
 
+#ifdef BATTERY
+    battery_loop();
+#endif
 
 #ifdef USE_MSC
     // Mass Storage Control Loop
