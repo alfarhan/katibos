@@ -39,13 +39,25 @@ struct EditorFont
     uint8_t arabicScale;
     int width; // Latin advance, corrected by measurement at setup
     int pitch; // baseline-to-baseline at Normal line spacing
+#ifdef EDITOR_FONT_PLEX
+    const uint8_t *plex; // the alternate Arabic face, cut to this size
+    int plexPitch;       // it reaches higher above the baseline - see below
+#endif
 };
 
+#ifdef EDITOR_FONT_PLEX
+static EditorFont WP_FONTS[] = {
+    {"Normal", u8g2_font_profont22_mf, 1, u8g2_font_10x20_t_arabic, 1, 12, 22, u8g2_font_ibmplex_arabic_s, 25},
+    {"Large", u8g2_font_profont29_mf, 1, u8g2_font_10x20_t_arabic, 1, 16, 29, u8g2_font_ibmplex_arabic_m, 29},
+    {"Bold", u8g2_font_profont15_mf, 2, u8g2_font_cu12_t_arabic, 2, 18, 30, u8g2_font_ibmplex_arabic_l, 36},
+};
+#else
 static EditorFont WP_FONTS[] = {
     {"Normal", u8g2_font_profont22_mf, 1, u8g2_font_10x20_t_arabic, 1, 12, 22},
     {"Large", u8g2_font_profont29_mf, 1, u8g2_font_10x20_t_arabic, 1, 16, 29},
     {"Bold", u8g2_font_profont15_mf, 2, u8g2_font_cu12_t_arabic, 2, 18, 30},
 };
+#endif
 static const int WP_FONT_COUNT = (int)(sizeof(WP_FONTS) / sizeof(WP_FONTS[0]));
 static EditorFont *wp_font = &WP_FONTS[0];
 
@@ -55,12 +67,49 @@ const char *WP_fontName(int i)
     return (i >= 0 && i < WP_FONT_COUNT) ? WP_FONTS[i].name : "";
 }
 
+// Which Arabic face the current settings ask for. The alternate is IBM Plex
+// Sans Arabic Bold - an outline typeface rather than a bitmap one, and one of
+// the few modern Arabic fonts that ships the FE70-FEFF presentation forms the
+// shaper emits (most shape via OpenType and omit them, which renders blank).
+// It is a size ladder alongside the three faces, not a fourth face: the Font
+// row keeps choosing the size, this only swaps which Arabic is drawn at it.
+// Only the Waveshare env carries it (~38KB of glyph data), so on rev_8 this
+// folds to a constant false and the Preferences row hides itself.
+// Cached, not read from config on demand: WP_selectFont runs once per glyph in
+// the render loop, and a JsonDocument lookup there would be paid ~600 times a
+// frame. WP_applyFont refreshes it, and every path that changes the setting
+// goes through WP_applyFont anyway - the metrics have to be redone regardless.
+static bool wp_alt = false;
+static bool wp_useAlt() { return wp_alt; }
+
+bool WP_hasArabicAlt()
+{
+#ifdef EDITOR_FONT_PLEX
+    return true;
+#else
+    return false;
+#endif
+}
+
+const char *WP_arabicFaceName(int index)
+{
+    return index ? "IBM Plex" : "Default";
+}
+
 // setFont() resets the scale, so the two always travel together - never call
 // setFont directly for editor text.
 static void WP_selectFont(U8G2_FOR_ST73XX *u8, bool arabic)
 {
     if (arabic)
     {
+#ifdef EDITOR_FONT_PLEX
+        if (wp_useAlt())
+        {
+            u8->setFont(wp_font->plex);
+            u8->setScale(1); // already a bold cut - nothing to thicken
+            return;
+        }
+#endif
         u8->setFont(wp_font->arabic);
         u8->setScale(wp_font->arabicScale);
     }
@@ -346,7 +395,15 @@ void WP_applyFont(int index)
         wp_arabicW[k] = -1;
     WP_invalidateWidthCache();
 
+    // Plex's letter+harakat stacks stand taller above the baseline than the
+    // bitmap faces do, so each size carries its own pitch for it; at the shared
+    // one the tashkil of a line lands in the descenders of the line above.
     font_height = wp_font->pitch;
+#ifdef EDITOR_FONT_PLEX
+    wp_alt = (status()["config"]["arabic_font"] | 0) != 0;
+    if (wp_alt)
+        font_height = wp_font->plexPitch;
+#endif
     font_width = wp_font->width;
     if (wp_u8)
     {

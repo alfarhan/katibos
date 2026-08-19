@@ -40,4 +40,11 @@ String formatNumberWithCommas(long num);
 int WP_fontCount();
 const char *WP_fontName(int index);
 void WP_applyFont(int index);
+
+// Arabic face alternate (config "arabic_font": 0 = Default, 1 = IBM Plex). The
+// glyph data is bundled only where the build asks for it, so the Preferences
+// row hides itself when WP_hasArabicAlt() is false. Changing it goes through
+// WP_applyFont, which redoes the metrics and the advance caches.
+bool WP_hasArabicAlt();
+const char *WP_arabicFaceName(int index);
 void WP_invalidateWidthCache();
