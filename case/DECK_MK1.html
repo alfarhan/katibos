@@ -1,0 +1,898 @@
+<title>katibOS Deck Mk1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    --paper:      #eceee9;
+    --sheet:      #f9faf7;
+    --ink:        #141c1a;
+    --ink-soft:   #4f5f5b;
+    --ink-faint:  #8b9995;
+    --rule:       #c3ccc7;
+    --rule-hard:  #141c1a;
+    --draft:      #1c5f66;
+    --draft-wash: #d9e6e6;
+    --flag:       #a92640;
+    --flag-wash:  #f2dade;
+    --shadow:     #141c1a;
+    --sp: clamp(1rem, 2.2vw, 1.5rem);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:      #0f1413;
+      --sheet:      #171e1d;
+      --ink:        #e6ebe7;
+      --ink-soft:   #9fb0ab;
+      --ink-faint:  #6b7c78;
+      --rule:       #313c3a;
+      --rule-hard:  #e6ebe7;
+      --draft:      #6cc0c6;
+      --draft-wash: #16302f;
+      --flag:       #ef7b8d;
+      --flag-wash:  #331b21;
+      --shadow:     #000000;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:      #0f1413;
+    --sheet:      #171e1d;
+    --ink:        #e6ebe7;
+    --ink-soft:   #9fb0ab;
+    --ink-faint:  #6b7c78;
+    --rule:       #313c3a;
+    --rule-hard:  #e6ebe7;
+    --draft:      #6cc0c6;
+    --draft-wash: #16302f;
+    --flag:       #ef7b8d;
+    --flag-wash:  #331b21;
+    --shadow:     #000000;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: var(--sp) var(--sp) 5rem;
+  }
+
+  /* ---- masthead ---- */
+  .stripes {
+    height: 12px;
+    background: repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 4px);
+    opacity: .85;
+  }
+  .mast {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.2rem 0 1rem;
+    border-bottom: 2px solid var(--rule-hard);
+  }
+  h1 {
+    font-family: Archivo, ui-sans-serif, sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.1rem, 6vw, 3.4rem);
+    letter-spacing: -.03em;
+    line-height: .95;
+    margin: 0;
+    text-wrap: balance;
+  }
+  h1 em {
+    font-style: normal;
+    color: var(--draft);
+  }
+  .mast p {
+    margin: .45rem 0 0;
+    color: var(--ink-soft);
+    max-width: 46ch;
+  }
+  .stampblock {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .72rem;
+    line-height: 1.5;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--ink-soft);
+    border: 1px solid var(--rule);
+    padding: .55rem .7rem;
+    min-width: 15rem;
+  }
+  .stampblock b {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* ---- stat strip ---- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0;
+    border: 2px solid var(--rule-hard);
+    border-top: 0;
+  }
+  .stats div {
+    padding: .7rem .8rem;
+    border-inline-start: 1px solid var(--rule);
+  }
+  .stats div:first-child { border-inline-start: 0; }
+  .stats dt {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .66rem;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    color: var(--ink-faint);
+  }
+  .stats dd {
+    margin: .15rem 0 0;
+    font-family: Archivo, sans-serif;
+    font-weight: 600;
+    font-size: 1.18rem;
+    letter-spacing: -.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .stats dd small {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 400;
+    font-size: .68rem;
+    color: var(--ink-soft);
+    letter-spacing: 0;
+  }
+
+  /* ---- sheets ---- */
+  .sheet {
+    display: grid;
+    grid-template-columns: 4.6rem 1fr;
+    gap: 0 1.4rem;
+    padding: 2.6rem 0 0;
+  }
+  .sheet > .no {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .72rem;
+    letter-spacing: .08em;
+    color: var(--draft);
+    padding-top: .55rem;
+    border-top: 2px solid var(--draft);
+  }
+  .sheet > .body { min-width: 0; border-top: 2px solid var(--rule-hard); padding-top: .5rem; }
+  @media (max-width: 680px) {
+    .sheet { grid-template-columns: 1fr; gap: 0; }
+    .sheet > .no { border-top: 2px solid var(--rule-hard); padding-bottom: .2rem; }
+    .sheet > .body { border-top: 0; padding-top: .2rem; }
+  }
+  h2 {
+    font-family: Archivo, sans-serif;
+    font-weight: 600;
+    font-size: clamp(1.35rem, 3vw, 1.75rem);
+    letter-spacing: -.02em;
+    line-height: 1.15;
+    margin: .1rem 0 .5rem;
+    text-wrap: balance;
+  }
+  h3 {
+    font-family: Archivo, sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: -.005em;
+    margin: 1.6rem 0 .4rem;
+  }
+  .body > p, .body > ul, .body > ol { max-width: 66ch; }
+  p { margin: .6rem 0; }
+  ul, ol { margin: .6rem 0; padding-inline-start: 1.15rem; }
+  li { margin: .28rem 0; }
+  strong { font-weight: 600; }
+  code, .mono {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .88em;
+  }
+  code {
+    background: var(--draft-wash);
+    color: var(--ink);
+    padding: .08em .3em;
+  }
+  .lead { font-size: 1.06rem; color: var(--ink-soft); }
+
+  /* ---- 1-bit chip, borrowed from the firmware's own hint bar ---- */
+  .chip {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .7rem;
+    font-weight: 500;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: .1em .45em;
+    vertical-align: .05em;
+  }
+  .chip.flag { background: var(--flag); color: var(--paper); }
+
+  /* ---- tables ---- */
+  .tablewrap { overflow-x: auto; margin: .9rem 0 .4rem; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 32rem;
+    font-size: .9rem;
+  }
+  caption {
+    caption-side: bottom;
+    text-align: start;
+    font-size: .78rem;
+    color: var(--ink-faint);
+    padding-top: .5rem;
+  }
+  th, td {
+    text-align: start;
+    padding: .42rem .7rem .42rem 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  thead th {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 500;
+    font-size: .68rem;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    color: var(--ink-faint);
+    border-bottom: 2px solid var(--rule-hard);
+  }
+  td.num, th.num { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: 2px solid var(--rule-hard); }
+  .src { color: var(--ink-faint); font-size: .82em; }
+
+  /* ---- figures ---- */
+  figure {
+    margin: 1.4rem 0 .5rem;
+    background: var(--sheet);
+    border: 2px solid var(--rule-hard);
+    box-shadow: 5px 5px 0 var(--shadow);
+  }
+  figure .plate { overflow-x: auto; padding: .6rem; }
+  figure svg { display: block; width: 100%; height: auto; min-width: 460px; }
+  figcaption {
+    border-top: 1px solid var(--rule);
+    padding: .55rem .8rem;
+    font-size: .82rem;
+    color: var(--ink-soft);
+  }
+  figcaption b { color: var(--ink); font-weight: 600; }
+
+  /* ---- callout ---- */
+  .note {
+    border-inline-start: 3px solid var(--draft);
+    background: var(--draft-wash);
+    padding: .7rem .9rem;
+    margin: 1rem 0;
+    font-size: .93rem;
+    max-width: 68ch;
+  }
+  .note.warn { border-color: var(--flag); background: var(--flag-wash); }
+  .note p:first-child { margin-top: 0; }
+  .note p:last-child { margin-bottom: 0; }
+
+  /* ---- cards ---- */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 2px solid var(--rule-hard);
+    margin: 1rem 0;
+  }
+  .cards article { background: var(--sheet); padding: .85rem .95rem; }
+  .cards h4 {
+    font-family: Archivo, sans-serif;
+    font-size: .95rem;
+    font-weight: 600;
+    margin: 0 0 .3rem;
+  }
+  .cards p { margin: 0; font-size: .88rem; color: var(--ink-soft); }
+  .cards .verdict {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .68rem;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--draft);
+    display: block;
+    margin-top: .5rem;
+  }
+
+  .checks { list-style: none; padding: 0; max-width: 68ch; }
+  .checks li {
+    display: grid;
+    grid-template-columns: 2.2rem 1fr;
+    gap: .6rem;
+    padding: .5rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .checks .n {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .8rem;
+    color: var(--flag);
+    padding-top: .1em;
+  }
+
+  footer {
+    margin-top: 3.5rem;
+    border-top: 2px solid var(--rule-hard);
+    padding-top: .8rem;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .72rem;
+    color: var(--ink-faint);
+    letter-spacing: .04em;
+  }
+  a { color: var(--draft); text-underline-offset: .18em; }
+  a:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--flag); outline-offset: 2px; }
+</style>
+
+<div class="stripes"></div>
+<div class="wrap">
+
+  <header class="mast">
+    <div>
+      <h1>katibOS Deck <em>Mk1</em></h1>
+      <p class="lead">Enclosure concept: a clamshell that docks the display case you already have. The lid is a frame, the base is a keyboard tray, and nothing at all crosses the hinge.</p>
+    </div>
+    <div class="stampblock">
+      Sheet set <b>A</b> · concept only<br>
+      Units <b>mm</b> · scale noted per view<br>
+      Rev <b>3</b> — docks the snap case<br>
+      Status <b>pre-CAD</b>
+    </div>
+  </header>
+
+  <dl class="stats">
+    <div><dt>Shut</dt><dd>308 × 130 × <em>28+T</em></dd></div>
+    <div><dt>Open height</dt><dd>146 <small>lid at 105°</small></dd></div>
+    <div><dt>Printed parts</dt><dd>8 <small>+3 spare stops</small></dd></div>
+    <div><dt>Largest part</dt><dd>200 × 130</dd></div>
+    <div><dt>Screen centre</dt><dd>84 <small>above desk</small></dd></div>
+    <div><dt>Crosses hinge</dt><dd>Nothing</dd></div>
+  </dl>
+
+  <!-- ============ A0 ============ -->
+  <section class="sheet">
+    <div class="no">A0<br>INPUTS</div>
+    <div class="body">
+      <h2>Three objects now, not two</h2>
+      <p>The display no longer arrives as a bare PCB. It arrives as a finished brick — board, cell and a snap-fit case that already solved the window, the cutouts and the cell retention. So the enclosure's job shrank: it does not house a board any more, it <em>docks a brick</em>.</p>
+
+      <div class="note warn">
+        <p><strong>I could not read your case's model page</strong> — printables.com is blocked from here, so every figure below that depends on its geometry is written as an expression in <span class="mono">T</span>, its outer thickness, rather than a number I made up. One caliper measurement resolves the whole sheet set. Sheet A7 tabulates the outcomes.</p>
+      </div>
+
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>Dimension</th><th class="num">Value</th><th>Where it lands in the design</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Display brick</strong> outer thickness</td><td class="num"><em>T</em> <span class="chip flag">measure</span></td><td><strong>Sets the shut height: 28 + <em>T</em>.</strong> Nothing else matters as much</td></tr>
+            <tr><td>Outer footprint</td><td class="num">~97 × 74 <span class="chip flag">measure</span></td><td>Cradle window, +0.4 clearance per side</td></tr>
+            <tr><td>Bezel borders, left / right</td><td class="num"><em>L</em> / <em>R</em> <span class="chip flag">measure</span></td><td>Cradle offset = (<em>R</em> − <em>L</em>) / 2 — see A4</td></tr>
+            <tr><td>Cell</td><td>Inside the case</td><td><strong>Resolves the old A7 fork:</strong> no wires cross the hinge</td></tr>
+            <tr><td>Ports and buttons</td><td>Already cut</td><td>Cradle stays open on both short edges, so any edge works</td></tr>
+            <tr><td>Active area</td><td class="num">84.80 × 63.60</td><td>0.212 mm/px at 400 × 300 landscape</td></tr>
+            <tr><td><strong>Keyboard</strong> footprint</td><td class="num">297.3 × 107.2 <span class="chip flag">verify</span></td><td>Pocket 299.3 × 108.5</td></tr>
+            <tr><td>Height, front → back</td><td class="num">13.5 → 22.0</td><td>Rear keycaps clear the shut lid's lip by 2.1</td></tr>
+            <tr><td>Built-in typing angle</td><td class="num">3.2° <span class="src">(feet stowed)</span></td><td>Base floor stays flat — the keyboard brings its own tilt</td></tr>
+            <tr><td>Mass</td><td class="num">463 g</td><td>All of it in the base; the lid can't tip it over</td></tr>
+          </tbody>
+        </table>
+        <caption>Board active area from Waveshare's outline drawing. Keyboard from published spec. Case figures to be measured — the design is written to accept them.</caption>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ A1 ============ -->
+  <section class="sheet">
+    <div class="no">A1<br>DRIVERS</div>
+    <div class="body">
+      <h2>What having the case already changes</h2>
+      <ol>
+        <li><strong>Nothing crosses the hinge. At all.</strong> The cell is in the brick, the keyboard is BLE. Previous revisions spent a whole sheet deciding where the 18650 goes and what it costs to route two wires through a knuckle — that question is now closed, and with it a dummy cell, a hatch, a connector and three printed parts.</li>
+        <li><strong>The lid is a frame, not a housing.</strong> No board pocket, no M2.5 bosses, no back cover, no I/O window to cut — the case did all of that. <span class="mono">lid_centre</span> becomes a 4 mm plate with a hole in it, which is why the part count fell from eleven to eight.</li>
+        <li><strong>Both halves stay removable.</strong> The keyboard lifts out and goes back to the desk; the brick pops out of the cradle and is a standalone reader again. Nothing in this build is captive, which is unusual for a writerdeck and worth keeping on purpose.</li>
+        <li><strong>The brick is thicker than a purpose-built island would be</strong>, and that cost is real: a bare board in a moulded pocket shuts at 46, the docked brick shuts at 28 + <em>T</em>. Sheet A7 says what that buys and how to get the millimetres back if you want them.</li>
+        <li><strong>The cradle grips only two edges.</strong> Open on the left and right, so it does not matter which edge carries USB-C — a question that cost me a checklist item in every earlier revision.</li>
+        <li><strong>200 mm part cap, from rev.8.</strong> Every part fits a 220 × 220 bed.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ A2 TWO STATES ============ -->
+  <section class="sheet">
+    <div class="no">A2<br>SHUT / OPEN</div>
+    <div class="body">
+      <h2>The two states, on the centreline</h2>
+      <p>Shut, the brick fills the lid plate and protrudes <em>T</em> − 4 from its outer face; over the rest of the lid the slab is 32 mm. Open, the lid stands at 105° from the base and puts the glass centre 84 mm above the desk. Both sections are drawn at <em>T</em> = 28 as a placeholder.</p>
+
+      <figure>
+        <div class="plate">
+          <svg viewBox="0 0 700 350" role="img" aria-label="Two centreline sections at a common scale. Shut: a 308 by 130 mm slab, 56 mm over the docked display brick and 32 mm elsewhere, keycaps clearing the lid's inner lip by 2.1 mm. Open: the lid at 105 degrees reaching 146 mm tall with the glass centre 84 mm above the desk, and nothing crossing the hinge.">
+            <defs>
+              <pattern id="stipF" width="6" height="6" patternUnits="userSpaceOnUse">
+                <circle cx="1.5" cy="1.5" r="1" fill="currentColor" opacity=".26"/>
+                <circle cx="4.5" cy="4.5" r="1" fill="currentColor" opacity=".26"/>
+              </pattern>
+              <marker id="arrF" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+                <path d="M0 1 L10 5 L0 9 z" fill="currentColor"/>
+              </marker>
+            </defs>
+
+            <g color="var(--ink-faint)" stroke="currentColor" stroke-width="1.8">
+              <line x1="26" y1="290" x2="270" y2="290"/>
+              <line x1="376" y1="290" x2="640" y2="290"/>
+            </g>
+
+            <!-- ===== SHUT ===== -->
+            <g color="var(--ink)" stroke="currentColor" fill="none" stroke-width="2">
+              <rect x="40" y="250.8" width="182" height="39.2" fill="url(#stipF)"/>
+            </g>
+            <g color="var(--ink-soft)" stroke="currentColor" fill="none" stroke-width="1.4">
+              <path d="M55 286.6 L207 286.6 L207 255.8 L55 267.7 Z"/>
+            </g>
+            <!-- lid plate -->
+            <g color="var(--ink)" stroke="currentColor" fill="none" stroke-width="2.2">
+              <rect x="51.2" y="245.2" width="170.8" height="5.6"/>
+            </g>
+            <!-- brick -->
+            <g color="var(--flag)" stroke="currentColor" fill="none" stroke-width="2.2">
+              <rect x="90.4" y="211.6" width="100.8" height="33.6"/>
+            </g>
+            <g color="var(--draft)" stroke="currentColor" stroke-width="3.2">
+              <line x1="92" y1="248" x2="189" y2="248"/>
+            </g>
+            <!-- inner lip -->
+            <g color="var(--ink)" stroke="currentColor" fill="currentColor">
+              <rect x="88" y="250.8" width="4" height="2.1"/>
+              <rect x="189" y="250.8" width="4" height="2.1"/>
+            </g>
+            <!-- latch magnets -->
+            <g color="var(--flag)" stroke="currentColor" fill="currentColor">
+              <rect x="52" y="246.6" width="5" height="3"/>
+              <rect x="52" y="253" width="5" height="3"/>
+            </g>
+
+            <g color="var(--draft)" stroke="currentColor" fill="none" stroke-width="1" font-family="IBM Plex Mono, monospace" font-size="10.5">
+              <line x1="30" y1="290" x2="30" y2="211.6" marker-start="url(#arrF)" marker-end="url(#arrF)"/>
+              <text x="36" y="224" fill="currentColor" stroke="none">28+T</text>
+              <line x1="236" y1="290" x2="236" y2="245.2" marker-start="url(#arrF)" marker-end="url(#arrF)"/>
+              <text x="242" y="270" fill="currentColor" stroke="none">32</text>
+              <line x1="40" y1="310" x2="222" y2="310" marker-start="url(#arrF)" marker-end="url(#arrF)"/>
+              <text x="131" y="324" text-anchor="middle" fill="currentColor" stroke="none">130 deep</text>
+            </g>
+
+            <!-- ===== OPEN ===== -->
+            <g color="var(--ink)" stroke="currentColor" fill="none" stroke-width="2">
+              <rect x="390" y="250.8" width="182" height="39.2" fill="url(#stipF)"/>
+            </g>
+            <g color="var(--ink-soft)" stroke="currentColor" fill="none" stroke-width="1.4">
+              <path d="M405 286.6 L557 286.6 L557 255.8 L405 267.7 Z"/>
+            </g>
+            <g color="var(--ink)" stroke="currentColor" fill="none" stroke-width="2.2">
+              <path d="M572 250.8 L527.8 85.8 L533.2 84.3 L577.4 249.3 Z"/>
+            </g>
+            <g color="var(--flag)" stroke="currentColor" fill="none" stroke-width="2.2">
+              <path d="M564 221 L537.9 123.7 L575.8 113.5 L601.9 210.8 Z"/>
+            </g>
+            <g color="var(--draft)" stroke="currentColor" stroke-width="3.4">
+              <line x1="564" y1="221" x2="537.9" y2="123.7"/>
+            </g>
+            <g color="var(--flag)" stroke="currentColor" fill="none" stroke-width="1.8">
+              <circle cx="573" cy="247" r="6.5"/>
+            </g>
+
+            <g color="var(--draft)" stroke="currentColor" fill="none" stroke-width="1" font-family="IBM Plex Mono, monospace" font-size="10.5">
+              <line x1="380" y1="290" x2="380" y2="85.8" marker-start="url(#arrF)" marker-end="url(#arrF)"/>
+              <text x="386" y="126" fill="currentColor" stroke="none">146 open</text>
+              <line x1="626" y1="290" x2="626" y2="172.4" marker-start="url(#arrF)" marker-end="url(#arrF)"/>
+              <text x="620" y="234" text-anchor="end" fill="currentColor" stroke="none">84 glass</text>
+              <path d="M572 212 A 38 38 0 0 0 551 236" stroke-width="1.2"/>
+              <text x="524" y="246" fill="currentColor" stroke="none" font-size="10">105°</text>
+              <path d="M546 136 A 32 32 0 0 1 558 143" stroke-width="1.2"/>
+              <text x="564" y="150" fill="currentColor" stroke="none" font-size="10">15° rake</text>
+            </g>
+
+            <g font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-soft)">
+              <text x="131" y="342" text-anchor="middle">SHUT — brick protrudes T−4</text>
+              <text x="481" y="342" text-anchor="middle">OPEN — no wires, no ribbon</text>
+              <text x="141" y="205" text-anchor="middle" fill="var(--flag)" font-size="9">docked brick</text>
+              <text x="70" y="238" text-anchor="middle" fill="var(--flag)" font-size="9">magnets</text>
+              <text x="596" y="258" fill="var(--flag)" font-size="9">hinge</text>
+            </g>
+          </svg>
+        </div>
+        <figcaption><b>A2 · centreline sections, 1:1.4, drawn at <em>T</em> = 28.</b> Red is the display brick and the hinge; blue is the glass. The brick drops into a through-window rather than sitting on the plate, which is worth 4 mm of shut height. The two small solid blocks on the lid's inner face are the 2.1 mm lip that stops the keycaps ever touching the glass.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ A3 PLANS ============ -->
+  <section class="sheet">
+    <div class="no">A3<br>PLANS</div>
+    <div class="body">
+      <h2>Base and lid, and where they split</h2>
+      <p>Both halves split into a 200 mm centre part and two 54 mm caps. The cradle window sits wholly inside the lid's centre part, and every joint lands under the keyboard or under a flat flank.</p>
+
+      <figure>
+        <div class="plate">
+          <svg viewBox="0 0 700 620" role="img" aria-label="Plan views at a common scale. Base: 308 by 130 mm with a 299.3 by 108.5 keyboard pocket, a 10 mm front shelf, and three hinge knuckle groups on the rear strip. Lid: 308 by 122 mm with a cradle window open on both short edges, split at 54 and 254 mm.">
+            <defs>
+              <pattern id="stipG" width="6" height="6" patternUnits="userSpaceOnUse">
+                <circle cx="1.5" cy="1.5" r="1" fill="currentColor" opacity=".26"/>
+                <circle cx="4.5" cy="4.5" r="1" fill="currentColor" opacity=".26"/>
+              </pattern>
+              <marker id="arrG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+                <path d="M0 1 L10 5 L0 9 z" fill="currentColor"/>
+              </marker>
+            </defs>
+
+            <!-- BASE -->
+            <g color="var(--ink)" stroke="currentColor" fill="none">
+              <rect x="60" y="44" width="554" height="234" stroke-width="2.2"/>
+              <line x1="60" y1="64.7" x2="614" y2="64.7" stroke-width="1.4"/>
+              <rect x="68" y="64.7" width="539" height="195.3" stroke-width="1.6" fill="url(#stipG)"/>
+              <line x1="60" y1="260" x2="614" y2="260" stroke-width="1.6"/>
+              <g stroke-width="1.4" stroke-dasharray="9 5">
+                <line x1="157" y1="44" x2="157" y2="278"/>
+                <line x1="517" y1="44" x2="517" y2="278"/>
+              </g>
+            </g>
+            <g color="var(--flag)" stroke="currentColor" fill="none" stroke-width="1.8">
+              <rect x="96" y="47" width="108" height="15"/>
+              <rect x="301" y="47" width="72" height="15"/>
+              <rect x="470" y="47" width="108" height="15"/>
+            </g>
+            <g color="var(--flag)" stroke="currentColor" fill="currentColor">
+              <rect x="196" y="266" width="9" height="6"/>
+              <rect x="469" y="266" width="9" height="6"/>
+            </g>
+            <g color="var(--draft)" stroke="currentColor" fill="none" stroke-width="1" font-family="IBM Plex Mono, monospace" font-size="10.5">
+              <line x1="60" y1="30" x2="614" y2="30" marker-start="url(#arrG)" marker-end="url(#arrG)"/>
+              <text x="337" y="24" text-anchor="middle" fill="currentColor" stroke="none">308.0</text>
+              <line x1="632" y1="44" x2="632" y2="278" marker-start="url(#arrG)" marker-end="url(#arrG)"/>
+              <text x="646" y="161" fill="currentColor" stroke="none" transform="rotate(90 646 161)" text-anchor="middle">130.0</text>
+              <line x1="622" y1="260" x2="622" y2="278" marker-start="url(#arrG)" marker-end="url(#arrG)"/>
+              <text x="616" y="273" text-anchor="end" fill="currentColor" stroke="none" font-size="9">10</text>
+              <line x1="60" y1="294" x2="157" y2="294" marker-start="url(#arrG)" marker-end="url(#arrG)"/>
+              <text x="108" y="308" text-anchor="middle" fill="currentColor" stroke="none" font-size="9">54</text>
+              <line x1="157" y1="294" x2="517" y2="294" marker-start="url(#arrG)" marker-end="url(#arrG)"/>
+              <text x="337" y="308" text-anchor="middle" fill="currentColor" stroke="none" font-size="9">200</text>
+              <line x1="517" y1="294" x2="614" y2="294" marker-start="url(#arrG)" marker-end="url(#arrG)"/>
+              <text x="566" y="308" text-anchor="middle" fill="currentColor" stroke="none" font-size="9">54</text>
+            </g>
+            <g font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-soft)">
+              <text x="337" y="170" text-anchor="middle">keyboard pocket 299.3 × 108.5</text>
+              <text x="150" y="58" text-anchor="middle" fill="var(--flag)" font-size="9">knuckles</text>
+              <text x="60" y="324" font-size="10">BASE — plan from above, lid removed</text>
+            </g>
+
+            <!-- LID -->
+            <g color="var(--ink)" stroke="currentColor" fill="none">
+              <rect x="60" y="360" width="554" height="219.6" stroke-width="2.2"/>
+              <g stroke-width="1.4" stroke-dasharray="9 5">
+                <line x1="157" y1="360" x2="157" y2="579.6"/>
+                <line x1="517" y1="360" x2="517" y2="579.6"/>
+              </g>
+            </g>
+            <!-- cradle window: open on the short edges -->
+            <g color="var(--flag)" stroke="currentColor" fill="none" stroke-width="2.2">
+              <line x1="249" y1="399.6" x2="425" y2="399.6"/>
+              <line x1="249" y1="529.2" x2="425" y2="529.2"/>
+              <line x1="249" y1="399.6" x2="249" y2="418" stroke-dasharray="5 4"/>
+              <line x1="425" y1="399.6" x2="425" y2="418" stroke-dasharray="5 4"/>
+              <line x1="249" y1="511" x2="249" y2="529.2" stroke-dasharray="5 4"/>
+              <line x1="425" y1="511" x2="425" y2="529.2" stroke-dasharray="5 4"/>
+              <!-- retaining tabs -->
+              <rect x="310" y="393" width="54" height="7"/>
+              <rect x="310" y="529.2" width="54" height="7"/>
+            </g>
+            <g color="var(--draft)" stroke="currentColor" fill="none" stroke-width="2">
+              <rect x="271" y="411" width="132" height="107"/>
+            </g>
+            <g color="var(--draft)" stroke="currentColor" fill="none" stroke-width="1" font-family="IBM Plex Mono, monospace" font-size="10.5">
+              <line x1="249" y1="346" x2="425" y2="346" marker-start="url(#arrG)" marker-end="url(#arrG)"/>
+              <text x="337" y="340" text-anchor="middle" fill="currentColor" stroke="none">cradle ≈ 97.8</text>
+              <line x1="632" y1="360" x2="632" y2="579.6" marker-start="url(#arrG)" marker-end="url(#arrG)"/>
+              <text x="646" y="470" fill="currentColor" stroke="none" transform="rotate(90 646 470)" text-anchor="middle">122.0</text>
+              <line x1="622" y1="360" x2="622" y2="399.6" marker-start="url(#arrG)" marker-end="url(#arrG)"/>
+              <text x="616" y="382" text-anchor="end" fill="currentColor" stroke="none" font-size="9">22</text>
+            </g>
+            <g font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-soft)">
+              <text x="60" y="352" font-size="10">LID — inner face, hinge edge at top</text>
+              <text x="337" y="470" text-anchor="middle" fill="var(--draft)">glass</text>
+              <text x="150" y="470" text-anchor="middle">nameplate</text>
+              <text x="566" y="470" text-anchor="middle">grille</text>
+              <text x="337" y="386" text-anchor="middle" fill="var(--flag)" font-size="9">sprung tab</text>
+              <text x="200" y="546" text-anchor="middle" fill="var(--flag)" font-size="9">open edge — any port works</text>
+            </g>
+          </svg>
+        </div>
+        <figcaption><b>A3 · plans, 1:1.8.</b> The cradle is closed only along its long edges (solid red) and open along the short ones (dashed), so whichever edge of your case carries USB-C stays reachable. Two sprung tabs hold the brick against the plate's inner rim; a thumb notch on the outer face pushes it back out.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ A4 CENTRING ============ -->
+  <section class="sheet">
+    <div class="no">A4<br>CENTRING</div>
+    <div class="body">
+      <h2>Centre the picture, not the case</h2>
+      <p>Waveshare's active area is not centred on its PCB: it sits 1.50 mm from the left edge and 6.20 mm from the right, where the ribbon folds. Whoever drew your snap case either compensated for that or didn't, and you inherit whichever they chose. Measure the two bezel borders and shift the cradle by half the difference — then the image is centred on the lid whatever the case does.</p>
+
+      <figure>
+        <div class="plate">
+          <svg viewBox="0 0 640 300" role="img" aria-label="The display case's front face with unequal bezel borders L and R around the glass. Shifting the cradle by half the difference between them puts the glass centreline on the lid centreline.">
+            <defs>
+              <marker id="arrH" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0 1 L10 5 L0 9 z" fill="currentColor"/>
+              </marker>
+            </defs>
+
+            <!-- case outline -->
+            <g color="var(--ink)" stroke="currentColor" fill="none" stroke-width="2.2">
+              <rect x="150" y="60" width="330" height="180"/>
+            </g>
+            <!-- glass, deliberately off-centre in the case -->
+            <g color="var(--draft)" stroke="currentColor" fill="none" stroke-width="2.4">
+              <rect x="176" y="86" width="258" height="128"/>
+            </g>
+            <!-- centrelines -->
+            <g stroke-width="1.2" stroke-dasharray="12 4 3 4" fill="none">
+              <line x1="315" y1="44" x2="315" y2="262" stroke="var(--ink-faint)"/>
+              <line x1="305" y1="44" x2="305" y2="262" stroke="var(--draft)"/>
+            </g>
+            <!-- shifted cradle -->
+            <g color="var(--flag)" stroke="currentColor" fill="none" stroke-width="1.8" stroke-dasharray="8 4">
+              <rect x="140" y="52" width="330" height="196"/>
+            </g>
+
+            <g color="var(--draft)" stroke="currentColor" fill="none" stroke-width="1" font-family="IBM Plex Mono, monospace" font-size="11">
+              <line x1="150" y1="150" x2="176" y2="150" marker-start="url(#arrH)" marker-end="url(#arrH)"/>
+              <text x="143" y="146" text-anchor="end" fill="currentColor" stroke="none">L</text>
+              <line x1="434" y1="150" x2="480" y2="150" marker-start="url(#arrH)" marker-end="url(#arrH)"/>
+              <text x="488" y="146" fill="currentColor" stroke="none">R</text>
+              <line x1="305" y1="272" x2="315" y2="272" marker-start="url(#arrH)" marker-end="url(#arrH)"/>
+              <text x="295" y="276" text-anchor="end" fill="currentColor" stroke="none" font-size="10">(R−L)/2</text>
+            </g>
+
+            <g font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-soft)">
+              <text x="530" y="80">case outline</text>
+              <text x="530" y="98" fill="var(--draft)">glass</text>
+              <text x="530" y="116" fill="var(--flag)">cradle, shifted</text>
+              <text x="530" y="148" fill="var(--ink-faint)">case CL</text>
+              <text x="530" y="166" fill="var(--draft)">glass CL = lid CL</text>
+              <text x="150" y="290" font-size="10">Shift the cradle toward the wider border by (R−L)/2. If R = L, don't shift.</text>
+            </g>
+          </svg>
+        </div>
+        <figcaption><b>A4 · centring, not to scale, borders exaggerated.</b> One measurement, one subtraction. On the raw board the asymmetry is 4.7 mm, so if the case simply centred the PCB the cradle wants a 2.35 mm shift — but measure rather than assume, because a careful case designer will already have fixed it.</figcaption>
+      </figure>
+
+      <div class="note">
+        <p><strong>The lip earns its place twice.</strong> A 2.1 mm rim around the window on the lid's inner face keeps the keycaps off the glass when shut — and at 15° of rake it is also the small hood that rev.8 puts round its own screen, which at that angle shades nothing. Protection and no penalty.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ A5 HINGE ============ -->
+  <section class="sheet">
+    <div class="no">A5<br>HINGE</div>
+    <div class="body">
+      <h2>Hinge — three plain groups, and now it needs real torque</h2>
+      <p>A 308 mm barrel would need a 308 mm pin, which does not exist off the shelf. Three groups instead: two 60 mm near the ends and one 40 mm in the middle, on M3 × 70 and M3 × 50 pins — the same screws rev.8's own BOM already calls for. None of them is hollow any more: nothing passes through.</p>
+
+      <figure>
+        <div class="plate">
+          <svg viewBox="0 0 700 230" role="img" aria-label="Hinge detail: five interleaved knuckles per outer group on an M3 by 70 pin with washers, a plain 40 mm centre group, and a swappable printed stop setting the open angle to 100, 105, 110 or 120 degrees.">
+            <defs>
+              <marker id="arrI" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+                <path d="M0 1 L10 5 L0 9 z" fill="currentColor"/>
+              </marker>
+            </defs>
+            <g color="var(--ink)" stroke="currentColor" fill="none" stroke-width="1.8">
+              <rect x="50" y="60" width="24" height="40"/><rect x="98" y="60" width="24" height="40"/>
+              <rect x="146" y="60" width="24" height="40"/>
+              <rect x="74" y="60" width="24" height="40" stroke-dasharray="5 3"/>
+              <rect x="122" y="60" width="24" height="40" stroke-dasharray="5 3"/>
+            </g>
+            <g color="var(--flag)" stroke="currentColor" fill="none" stroke-width="2">
+              <line x1="42" y1="80" x2="182" y2="80"/>
+              <circle cx="42" cy="80" r="5"/>
+            </g>
+            <g font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink-soft)">
+              <text x="110" y="122" text-anchor="middle">outer group — 5 knuckles, 60 wide</text>
+              <text x="110" y="136" text-anchor="middle" fill="var(--flag)">M3 × 70 pin + PTFE washers</text>
+              <text x="60" y="52" font-size="9">lid</text>
+              <text x="82" y="52" font-size="9" fill="var(--ink-faint)">base</text>
+            </g>
+
+            <g color="var(--ink)" stroke="currentColor" fill="none" stroke-width="1.8">
+              <rect x="270" y="60" width="30" height="40"/>
+              <rect x="300" y="60" width="30" height="40" stroke-dasharray="5 3"/>
+              <rect x="330" y="60" width="30" height="40"/>
+            </g>
+            <g color="var(--flag)" stroke="currentColor" fill="none" stroke-width="2">
+              <line x1="262" y1="80" x2="368" y2="80"/>
+            </g>
+            <g font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink-soft)">
+              <text x="315" y="122" text-anchor="middle">centre group — 40 wide, solid</text>
+              <text x="315" y="136" text-anchor="middle" fill="var(--flag)">M3 × 50 pin</text>
+            </g>
+
+            <g color="var(--ink)" stroke="currentColor" fill="none" stroke-width="1.8">
+              <path d="M520 100 L620 100 L620 78 L520 78 Z"/>
+              <path d="M596 78 L640 30" stroke-width="2.2"/>
+            </g>
+            <g color="var(--flag)" stroke="currentColor" fill="none" stroke-width="2">
+              <path d="M596 78 L612 62 L620 70 Z"/>
+            </g>
+            <g color="var(--draft)" stroke="currentColor" fill="none" stroke-width="1" font-family="IBM Plex Mono, monospace" font-size="10">
+              <path d="M604 62 A 26 26 0 0 0 588 76" stroke-width="1.2"/>
+              <text x="556" y="58" text-anchor="end" fill="currentColor" stroke="none">100 / 105 / 110 / 120°</text>
+            </g>
+            <g font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink-soft)">
+              <text x="580" y="122" text-anchor="middle">swappable stop insert</text>
+              <text x="580" y="136" text-anchor="middle" fill="var(--flag)">print four, keep one</text>
+            </g>
+
+            <g color="var(--draft)" stroke="currentColor" fill="none" stroke-width="1" font-family="IBM Plex Mono, monospace" font-size="10">
+              <line x1="50" y1="186" x2="170" y2="186" marker-start="url(#arrI)" marker-end="url(#arrI)"/>
+              <text x="110" y="200" text-anchor="middle" fill="currentColor" stroke="none">60</text>
+              <line x1="270" y1="186" x2="360" y2="186" marker-start="url(#arrI)" marker-end="url(#arrI)"/>
+              <text x="315" y="200" text-anchor="middle" fill="currentColor" stroke="none">40</text>
+            </g>
+          </svg>
+        </div>
+        <figcaption><b>A5 · hinge, not to scale.</b> Solid knuckles belong to the lid, dashed to the base. Knuckles must print with layers running <em>along</em> the pin axis or the first one shears on layer lines — which is why the base's knuckles are part of <span class="mono">base_centre</span> and the caps, not bonded on afterwards.</figcaption>
+      </figure>
+
+      <div class="note warn">
+        <p><strong>Buy the torque hinges.</strong> The brick is board + case + cell, call it ~165 g, on a ~150 g lid plate: roughly 2 kgf·cm at the pin. Printed knuckle friction held the 150 g lid of the previous revision; it will creep under this one. A pair of 3–4 kgf·cm mini torque hinges pocketed into the outer groups is the fix, and it is the only part of this design I would not try to print.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ A6 PARTS ============ -->
+  <section class="sheet">
+    <div class="no">A6<br>PARTS</div>
+    <div class="body">
+      <h2>Eight printed parts, one small bag of hardware</h2>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Part</th><th class="num">Size</th><th>Print orientation</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><span class="mono">base_centre</span></td><td class="num">200 × 130 × 28</td><td>Floor down</td><td>Centre knuckle group, both joints</td></tr>
+            <tr><td><span class="mono">base_cap_L / _R</span></td><td class="num">54 × 130 × 28</td><td>Floor down, mirrored</td><td>Outer knuckle groups and the torque-hinge pockets</td></tr>
+            <tr><td><span class="mono">lid_centre</span></td><td class="num">200 × 122 × 4</td><td>Inner face down</td><td>Cradle window, sprung tabs, inner lip, thumb notch</td></tr>
+            <tr><td><span class="mono">lid_cap_L / _R</span></td><td class="num">54 × 122 × 4</td><td>Flat</td><td>Nameplate recess left, speaker grille right</td></tr>
+            <tr><td><span class="mono">hinge_stop</span> × 2</td><td class="num">~20 × 12 × 8</td><td>Flat</td><td>Print 100/105/110/120°, fit one pair</td></tr>
+            <tr><td><span class="mono">nameplate</span></td><td class="num">90 × 15 × 2</td><td>Flat</td><td>Cheapest part in the set, biggest effect on the finish</td></tr>
+          </tbody>
+        </table>
+        <caption>Gone since the previous revision, all because the case and its cell already exist: the island cavity and its four M2.5 bosses, <span class="mono">island_cover</span>, <span class="mono">io_blank</span>, <span class="mono">base_hatch</span> and <span class="mono">cell_dummy</span>.</caption>
+      </div>
+
+      <h3>Hardware</h3>
+      <ul>
+        <li>8 × M3 × 16 socket cap + 8 × M3 heat-set inserts — two base joints, two lid joints</li>
+        <li>2 × mini torque hinges, 3–4 kgf·cm — or 2 × M3 × 70 + 1 × M3 × 50 with PTFE washers if you want to try printed friction first</li>
+        <li>4 × Ø6 × 3 neodymium magnets — 2 in the lid's front edge, 2 in the base's front shelf</li>
+        <li>4 × Ø12 silicone feet + 4 pads in the keyboard pocket</li>
+      </ul>
+      <p>No M2.5 screws, no connector, no glue. The display brick is never opened.</p>
+
+      <h3>Print notes</h3>
+      <p>PETG or ASA, not PLA — a 300 mm span that has softened in a car is scrap. 0.2 mm layers, 3 walls, 15% gyroid; 4 walls on the knuckles and on <span class="mono">lid_centre</span>, which at 4 mm over 308 mm is the part that will flex. Estimated ~265 cm³ of modelled solid, so roughly 300 g of filament — against 842 cm³ for rev.8's twenty parts.</p>
+    </div>
+  </section>
+
+  <!-- ============ A7 T TABLE ============ -->
+  <section class="sheet">
+    <div class="no">A7<br>ONE NUMBER</div>
+    <div class="body">
+      <h2>Shut height is 28 + <em>T</em>. Everything else is decided.</h2>
+      <p>28 mm is the base rim plus the lid rim; <em>T</em> is your case's outer thickness. Measure it across the thickest point — over the cell, not over the bezel — and read off the row.</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th class="num">Case thickness <em>T</em></th><th class="num">Shut height</th><th>Verdict</th></tr></thead>
+          <tbody>
+            <tr><td class="num">16</td><td class="num">44</td><td>Thinner than a purpose-built island. Take it.</td></tr>
+            <tr><td class="num">20</td><td class="num">48</td><td>Level with a purpose-built island. No reason to reprint anything.</td></tr>
+            <tr><td class="num">25</td><td class="num">53</td><td>Fine. Still 7 mm under rev.8.</td></tr>
+            <tr><td class="num">28</td><td class="num">56</td><td>Acceptable. This is the figure the drawings assume.</td></tr>
+            <tr><td class="num">30</td><td class="num">58</td><td>Getting fat. Read the two escapes below.</td></tr>
+            <tr><td class="num">32+</td><td class="num">60+</td><td>You have lost the whole advantage over rev.8. Take an escape.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Two escapes, if your number is at the bottom of that table</h3>
+      <ul>
+        <li><strong>Merge the case into the lid.</strong> Take the snap case's own geometry and build it into <span class="mono">lid_centre</span> as a moulded pocket: one part instead of two, no cradle rim, no tabs, and the plate thickness stops being wasted — back to ~46 mm shut. The cost is a case that already works and already fits, and the display stops being a standalone device.</li>
+        <li><strong>Fold the screen backwards instead of forwards.</strong> Hinge at the <em>front</em> of a rear well and let the brick lie face-down in a 100 × 78 × <em>T</em> pocket behind the keyboard, with a separate thin cover over the keys. Shut height becomes <span class="mono">max(28, T + 6)</span> — about 34 mm — because the brick no longer stacks on top of the base. It costs ~70 mm of depth (base goes to ~200) and two lids instead of one. It is the thinnest slab available with this brick, and if the number in that table horrifies you, this is the design worth drawing next.</li>
+      </ul>
+
+      <div class="note">
+        <p><strong>What docking buys, to weigh against those millimetres:</strong> the board is never disassembled, the ports and buttons are already cut and always reachable, the cell retention is already solved and proven, and the display remains a device in its own right — which is the same property the Air60 has. Both halves of this writerdeck can walk away and be useful alone. That is worth several millimetres.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ A8 BENCHMARK ============ -->
+  <section class="sheet">
+    <div class="no">A8<br>BENCHMARK</div>
+    <div class="body">
+      <h2>Against Micro Journal rev.8</h2>
+      <p class="lead">rev.8 set the form. Adopting it with parts that already exist gives up some thickness and wins nearly everything else: eleven fewer printed parts, a third of the plastic, and no soldering anywhere.</p>
+      <p>Every rev.8 figure is measured off the twenty published STLs. Its open height is derived from the lid length at an estimated ~78°, because the <span class="mono">3mf</span> in that folder is a print-plate layout, not an assembly.</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>&nbsp;</th><th class="num">Micro Journal rev.8</th><th class="num">Deck Mk1</th></tr></thead>
+          <tbody>
+            <tr><td>Shut</td><td class="num">~350 × 162 × 60</td><td class="num">308 × 130 × <em>28+T</em> <span class="src">≈ 56</span></td></tr>
+            <tr><td>Open height</td><td class="num">~177 <span class="src">est.</span></td><td class="num">146</td></tr>
+            <tr><td>Base height</td><td class="num">47.1</td><td class="num">28</td></tr>
+            <tr><td>Footprint area</td><td class="num">567 cm²</td><td class="num">400 cm² <span class="src">−29%</span></td></tr>
+            <tr><td>Printed parts</td><td class="num">20</td><td class="num">8 <span class="src">+3 spare stops</span></td></tr>
+            <tr><td>Modelled solid volume</td><td class="num">842 cm³</td><td class="num">~265 cm³ <span class="src">est.</span></td></tr>
+            <tr><td>Bought assemblies</td><td class="num">0</td><td class="num">3 <span class="src">board case, keyboard, hinges</span></td></tr>
+            <tr><td>Keyboard</td><td>69-key PCB + 2 printed plates + switches + caps + 6.25u stabiliser</td><td>Air60 V2, drops in and lifts out</td></tr>
+            <tr><td>Crosses the hinge</td><td>Display ribbon + power</td><td>Nothing</td></tr>
+            <tr><td>Soldering</td><td>6 subassemblies</td><td>None</td></tr>
+            <tr><td>Screen centre height</td><td class="num">~110 <span class="src">est.</span></td><td class="num">84</td></tr>
+          </tbody>
+        </table>
+        <caption>rev.8 geometry from the bounding boxes and closed volumes of the STLs in <span class="mono">micro-journal-rev-8/STL</span>; BOM from its <span class="mono">build.md</span>.</caption>
+      </div>
+
+      <h3>Where rev.8 is still ahead</h3>
+      <ul>
+        <li><strong>The screen sits higher</strong> — its lid is 133 long against our 122, and it is not carrying a 74 mm-tall brick that has to fit inside the lid's length. 84 mm is a typewriter's eye line, which is defensible, but it is lower.</li>
+        <li><strong>It owns its keyboard.</strong> Switches, caps and layout are yours, and no BLE pairing can go wrong.</li>
+        <li><strong>It has been built.</strong> Nothing here has been printed, and the hinge in particular is drawn, not proven.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ A9 CHECKS ============ -->
+  <section class="sheet">
+    <div class="no">A9<br>BEFORE CAD</div>
+    <div class="body">
+      <h2>Four measurements, and the sheet set is real</h2>
+      <p>The list used to have seven items. Owning the case retired three of them and the battery retired a fourth.</p>
+      <ol class="checks">
+        <li><span class="n">01</span><span><strong><em>T</em> — the case's outer thickness at its thickest point.</strong> Over the cell, not the bezel. Sets the shut height directly and nothing else competes for importance.</span></li>
+        <li><span class="n">02</span><span><strong>The case's outer footprint,</strong> X × Y, plus whether its edges are square or drafted. Sets the cradle window and how the sprung tabs have to reach.</span></li>
+        <li><span class="n">03</span><span><strong>The bezel borders left and right of the glass.</strong> Cradle offset = (R − L) / 2 — sheet A4. Takes ten seconds and is invisible if you skip it and wrong.</span></li>
+        <li><span class="n">04</span><span><strong>Your keyboard's length, depth and rear height with keycaps on.</strong> Spec says 297.3 × 107.2 and 22.0; the base rim is 28 and the shut clearance over the lip is 2.1. A 2 mm surprise means the lid rests on your keys.</span></li>
+      </ol>
+
+      <div class="note">
+        <p><strong>Nothing here touches the firmware.</strong> The <span class="mono">waveshare</span> env already drives this panel, hosts BLE keyboards and reads the cell on GPIO4 — and since the cell never leaves the brick, that reading stays exactly as it is. Worth knowing about <em>Sleep</em>: it is hidden on this board because a BLE keyboard cannot wake a radio that is off, and shutting the lid changes nothing about that. Closing this device is not a power state; it is just a lid.</p>
+      </div>
+
+      <p>Send me <em>T</em>, the footprint and the two borders and this becomes a dimensioned set rather than a parametric one — and if <em>T</em> lands past 30, say so and I will draw the fold-backwards variant from sheet A7 instead.</p>
+    </div>
+  </section>
+
+  <footer>
+    katibOS Deck Mk1 · sheet set A rev 3, docks the snap case · concept, not manufacturing data · all dimensions mm and subject to sheet A9
+  </footer>
+</div>

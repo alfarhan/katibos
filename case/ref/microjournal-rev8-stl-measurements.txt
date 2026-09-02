@@ -1,0 +1,55 @@
+Micro Journal rev.8 — STL bounding boxes and closed volumes
+Measured from github.com/unkyulee/micro-journal @ micro-journal-rev-8/STL
+(all 20 STLs parsed directly; volume is the signed tetrahedron sum of the mesh)
+
+part                                   X       Y       Z      cm3    tris
+Enclosure Middle                   200.0   161.7    34.8    224.6    5040
+Enclosure Right                     75.2   161.7    47.1    100.7    7546
+Enclosure Left                      75.2   161.7    47.1    100.7    5754
+Display Enclosure Middle           200.0   133.2    12.0     89.6    5588
+Display Panel Left                  97.4    98.7     4.0     36.4     852
+keyboard plate space               195.2   105.7     3.0     36.4    1640
+Display Wire Cap                   200.0    32.0    14.0     36.1    1334
+Display Panel Right                 97.4    98.7     4.0     33.5    1448
+Enclosure Lid                      200.0    27.4    11.3     31.0     792
+Display Enclosure Left              65.2   106.7    12.0     28.6    1984
+Display Enclosure Right             65.2   106.7    12.0     26.0    2144
+Display Panel Middle               135.7    98.7     4.0     23.1     972
+keyboard plate arrow               119.2   105.7     3.0     22.1    1064
+Display Back Cover                 104.0    82.0     2.0     17.0     412
+Hood Left                           95.2   106.7    12.6      8.6    1870
+Hood Right                          95.2   106.7    12.6      8.6    1906
+Display Port                        99.8    78.6     6.0      8.1     660
+Hood Top                           144.0    11.0    12.6      7.3     470
+Hood Bottom                        144.0    11.0     3.3      2.0     348
+Lable                               90.0    15.0     2.0      1.7    2356
+TOTAL 20 parts                                              842.1
+
+Derived
+-------
+Base body    Enclosure Left + Middle + Right   = 350.4 x 161.7 x 47.1
+Lid          Display Enclosure L + M + R       = 330.4 x 133.2 x 12.0
+Keyboard     plate space + plate arrow         = 314.4 x 105.7 x 3.0
+Shut         ~350 x 162 x 60
+Open height  ~177  (lid 133.2 long at an estimated ~78 deg; NOT measured --
+                    rev.8.3mf is a print-plate layout, not an assembly, so its
+                    item transforms are print orientations and give no assembly)
+
+Notes that mattered to the katibOS design
+-----------------------------------------
+* Four parts are exactly 200.0 in X. That is a deliberate bed cap, not a
+  coincidence -- Ender/Prusa-Mini class. Adopted for Deck Mk1.
+* The base is 47.1 tall because it houses six subassemblies (ESP32-S3, LiPo
+  charger/step-up, 18650 holder, rocker switch, keyboard PCB, FPC adapter).
+  One Waveshare board replaces all of them, which is the whole reason Deck
+  Mk1's base can be 28.
+* The lid is only 12 thick because it carries glass alone; the display ribbon
+  therefore crosses the hinge. Deck Mk1 inverts this -- the lid is the entire
+  computer and nothing crosses the hinge.
+* Hood Left/Right (95.2 x 106.7) + Hood Top (144 x 11) form a three-piece
+  shroud around the glass. rev.8 hoods a reflective panel and its author's
+  pitch is that the panel gets better in bright light: both hold, because a
+  raised frame on a lid leaning ~78 deg away from the reader shades nothing.
+  The rule is "no hood on a steep panel", not "no hood".
+* BOM (build.md) calls for M3 x 70 screws -- those are the hinge pins.
+  Also M3/M2 heat-set inserts, B-7000 glue, and a TORX T10H driver.
